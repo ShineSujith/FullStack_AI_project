@@ -1,0 +1,33 @@
+
+===== SUMMARY REPORT for 2020 =====
+Ticker  num_trades  avg_gain  total_gain
+   APA           1    0.2332      0.2332
+  APTV           1    0.0658      0.0658
+  AXON           1    0.0969      0.0969
+  BIIB           1    0.1422      0.1422
+   CAH           1    0.1205      0.1205
+  CBRE           1    0.1232      0.1232
+   CLX           1    0.2444      0.2444
+  CRWD           1    0.2936      0.2936
+  CTRA           1    0.2093      0.2093
+   DLR           1    0.4265      0.4265
+   DVN           1    0.3479      0.3479
+  GDDY           1    0.1233      0.1233
+  GNRC           2    0.0967      0.2024
+   HWM           1    0.1668      0.1668
+   MGM           1    0.3892      0.3892
+  MRNA           1    0.2474      0.2474
+  NCLH           1    0.2470      0.2470
+   NEE           1    0.0381      0.0381
+  QCOM           1    0.2035      0.2035
+   SPG           1    0.1057      0.1057
+   TTD           1    0.4436      0.4436
+   ALL          22    0.2078     51.6816
+
+--- Win/Loss Statistics ---
+Total Trades: 22
+Wins: 22, Losses: 0, Win Rate: 100.00%
+Average Gain per Trade: 0.2028
+Total Return (with fees): 51.6816
+Final Capital Multiple: 52.6816x
+=====================================
