@@ -1,4 +1,134 @@
 
+===== SUMMARY REPORT for 2024 =====
+Ticker  num_trades  avg_gain  total_gain
+  AVGO           1    0.2640      0.2640
+  AXON           1    0.2180      0.2180
+    BA           1    0.0967      0.0967
+   BAX           1    0.0856      0.0856
+   BXP           1    0.0847      0.0847
+   COR           1    0.0417      0.0417
+  DDOG           1    0.0720      0.0720
+   DRI           1    0.1451      0.1451
+   DVA           1    0.0842      0.0842
+   EFX           1    0.0401      0.0401
+  GDDY           2    0.0720      0.1492
+    GE           1    0.0957      0.0957
+   HWM           1    0.1453      0.1453
+  JKHY           1    0.0532      0.0532
+  MCHP           1    0.0606      0.0606
+   NOW           1    0.1317      0.1317
+  NTAP           1    0.2262      0.2262
+  PARA           1    0.3174      0.3174
+   PFE           1    0.0632      0.0632
+  PLTR           1    0.3164      0.3164
+  PODD           1    0.1191      0.1191
+   TPL           1    0.2401      0.2401
+  TSLA           2    0.1503      0.3162
+   TTD           1    0.1270      0.1270
+   TYL           1    0.0447      0.0447
+   WBA           1    0.2636      0.2636
+   WSM           1    0.1521      0.1521
+   ALL          29    0.1374     35.9955
+
+--- Win/Loss Statistics ---
+Total Trades: 29
+Wins: 29, Losses: 0, Win Rate: 100.00%
+Average Gain per Trade: 0.1356
+Total Return (with fees): 35.9955
+Final Capital Multiple: 36.9955x
+=====================================
+
+===== SUMMARY REPORT for 2023 =====
+Ticker  num_trades  avg_gain  total_gain
+  ANET           1    0.2260      0.2260
+   APO           1    0.1426      0.1426
+  COIN           2    0.3086      0.7107
+   COP           1    0.0686      0.0686
+   CRM           1    0.1481      0.1481
+    DD           1    0.0729      0.0729
+   ECL           1    0.0845      0.0845
+  ENPH           1    0.1396      0.1396
+   ESS           1    0.0953      0.0953
+  INCY           1    0.0314      0.0314
+  LULU           1    0.1289      0.1289
+  MDLZ           1    0.0463      0.0463
+  MNST           1    0.0686      0.0686
+  NTRS           1    0.1395      0.1395
+  PAYX           1    0.0648      0.0648
+  PLTR           1    0.2510      0.2510
+   PWR           1    0.0713      0.0713
+  SMCI           2    0.3124      0.7205
+   TGT           1    0.2318      0.2318
+  TSLA           1    0.3271      0.3271
+   WSM           1    0.2106      0.2106
+   WTW           1    0.1106      0.1106
+   ALL          24    0.1491     33.1844
+
+--- Win/Loss Statistics ---
+Total Trades: 24
+Wins: 24, Losses: 0, Win Rate: 100.00%
+Average Gain per Trade: 0.1626
+Total Return (with fees): 33.1844
+Final Capital Multiple: 34.1844x
+=====================================
+
+===== SUMMARY REPORT for 2022 =====
+Ticker  num_trades  avg_gain  total_gain
+   APA           2    0.3212      0.7421
+   BBY           1    0.2139      0.2139
+  CRWD           1    0.2995      0.2995
+  DDOG           1    0.3684      0.3684
+   EQT           1    0.2187      0.2187
+   FIS           1    0.2668      0.2668
+   GLW           1    0.0890      0.0890
+   HST           1    0.1442      0.1442
+  MRNA           1    0.1939      0.1939
+   NKE           1    0.1213      0.1213
+   NOC           1    0.0514      0.0514
+   NRG           1    0.0780      0.0780
+   OMC           1    0.2272      0.2272
+   OXY           1    0.1801      0.1801
+   PCG           1    0.0563      0.0563
+  REGN           1    0.2023      0.2023
+   ALL          17    0.1895     19.1854
+
+--- Win/Loss Statistics ---
+Total Trades: 17
+Wins: 17, Losses: 0, Win Rate: 100.00%
+Average Gain per Trade: 0.1973
+Total Return (with fees): 19.1854
+Final Capital Multiple: 20.1854x
+=====================================
+
+===== SUMMARY REPORT for 2021 =====
+Ticker  num_trades  avg_gain  total_gain
+   AWK           1    0.0579      0.0579
+    CF           1    0.1948      0.1948
+  CHRW           1    0.0560      0.0560
+   COR           1    0.0482      0.0482
+   CZR           1    0.2007      0.2007
+  DASH           1    0.1879      0.1879
+  ENPH           1    0.1761      0.1761
+  GNRC           1    0.0644      0.0644
+   LEN           1    0.2531      0.2531
+  NDSN           1    0.0251      0.0251
+   NKE           1    0.1684      0.1684
+  PANW           1    0.1697      0.1697
+  PLTR           1    0.3913      0.3913
+   TTD           1    0.2921      0.2921
+  UBER           1    0.3106      0.3106
+   URI           1    0.1020      0.1020
+   WSM           1    0.1432      0.1432
+   ALL          17    0.1672     12.0180
+
+--- Win/Loss Statistics ---
+Total Trades: 17
+Wins: 17, Losses: 0, Win Rate: 100.00%
+Average Gain per Trade: 0.1672
+Total Return (with fees): 12.0180
+Final Capital Multiple: 13.0180x
+=====================================
+
 ===== SUMMARY REPORT for 2020 =====
 Ticker  num_trades  avg_gain  total_gain
    APA           1    0.2332      0.2332
@@ -30,4 +160,198 @@ Wins: 22, Losses: 0, Win Rate: 100.00%
 Average Gain per Trade: 0.2028
 Total Return (with fees): 51.6816
 Final Capital Multiple: 52.6816x
+=====================================
+
+===== SUMMARY REPORT for 2019 =====
+Ticker  num_trades  avg_gain  total_gain
+  ALGN           1    0.1712      0.1712
+   AZO           1    0.0826      0.0826
+   BBY           1    0.1274      0.1274
+   CAG           1    0.1900      0.1900
+  CBOE           2    0.0644      0.1329
+    CF           1    0.0806      0.0806
+  CPAY           1    0.0684      0.0684
+   CPB           1    0.1008      0.1008
+  DDOG           1    0.3365      0.3365
+   DVN           1    0.1211      0.1211
+  FAST           1    0.1714      0.1714
+  FICO           1    0.1276      0.1276
+  HSIC           1    0.0336      0.0336
+  INCY           1    0.1132      0.1132
+    IR           1    0.2081      0.2081
+  MRNA           1    0.2529      0.2529
+  MTCH           1    0.2825      0.2825
+   PCG           1    0.3353      0.3353
+  PODD           1    0.1310      0.1310
+  POOL           1    0.0275      0.0275
+  SWKS           1    0.1911      0.1911
+   TTD           1    0.1714      0.1714
+  ZBRA           1    0.1920      0.1920
+   ALL          24    0.1557     26.9403
+
+--- Win/Loss Statistics ---
+Total Trades: 24
+Wins: 24, Losses: 0, Win Rate: 100.00%
+Average Gain per Trade: 0.1519
+Total Return (with fees): 26.9403
+Final Capital Multiple: 27.9403x
+=====================================
+
+===== SUMMARY REPORT for 2018 =====
+Ticker  num_trades  avg_gain  total_gain
+  ALGN           1    0.0875      0.0875
+  BIIB           1    0.2391      0.2391
+  CTRA           1    0.2246      0.2246
+   DVA           1    0.1110      0.1110
+  ENPH           1    0.2778      0.2778
+   GWW           1    0.2051      0.2051
+   HII           1    0.0830      0.0830
+   IPG           1    0.1213      0.1213
+  TSLA           1    0.1519      0.1519
+   TTD           4    0.3311      2.1192
+   UAL           1    0.1446      0.1446
+   ALL          14    0.1797     13.0984
+
+--- Win/Loss Statistics ---
+Total Trades: 14
+Wins: 14, Losses: 0, Win Rate: 100.00%
+Average Gain per Trade: 0.2122
+Total Return (with fees): 13.0984
+Final Capital Multiple: 14.0984x
+=====================================
+
+===== SUMMARY REPORT for 2017 =====
+Ticker  num_trades  avg_gain  total_gain
+   ALB           1    0.1109      0.1109
+  AMCR           3   -0.0020     -0.0060
+  ANET           1    0.1099      0.1099
+   APD           1    0.0455      0.0455
+   BBY           2    0.1551      0.3314
+  BLDR           1    0.0949      0.0949
+   CFG           1    0.0975      0.0975
+  CPAY           1    0.1448      0.1448
+   CZR           1    0.0933      0.0933
+  DXCM           1    0.1486      0.1486
+  ENPH           2    0.2329      0.5196
+  ERIE           1    0.0693      0.0693
+  FANG           1    0.0446      0.0446
+    HD           1    0.0228      0.0228
+   HPE           1    0.0793      0.0793
+  LRCX           1    0.0857      0.0857
+  LULU           1    0.1009      0.1009
+   MOH           1    0.0561      0.0561
+  NDSN           1    0.1558      0.1558
+   NKE           1    0.1523      0.1523
+   NRG           1    0.2865      0.2865
+   PEG           1    0.0294      0.0294
+   PNR           1    0.0339      0.0339
+   TPR           1    0.1116      0.1116
+  TSLA           1    0.0851      0.0851
+   WSM           1    0.1315      0.1315
+   ALL          30    0.1029     16.3522
+
+--- Win/Loss Statistics ---
+Total Trades: 30
+Wins: 27, Losses: 3, Win Rate: 90.00%
+Average Gain per Trade: 0.1020
+Total Return (with fees): 16.3522
+Final Capital Multiple: 17.3522x
+=====================================
+
+===== SUMMARY REPORT for 2016 =====
+Ticker  num_trades  avg_gain  total_gain
+  ADSK           1    0.1583      0.1583
+  AMCR           7   -0.0020     -0.0139
+   AMD           2    0.3674      0.8467
+   BBY           1    0.2013      0.2013
+    CB           1    0.0429      0.0429
+  CTRA           1    0.0777      0.0777
+   DVN           1    0.2106      0.2106
+   EMN           1    0.1373      0.1373
+  ENPH           1    0.2698      0.2698
+  FANG           1    0.1551      0.1551
+  NDSN           1    0.0525      0.0525
+   OKE           2    0.3024      0.6962
+   PFG           1    0.0645      0.0645
+  SMCI           1    0.2354      0.2354
+   STX           1    0.4035      0.4035
+    SW           1   -0.0020     -0.0020
+  TRGP           1    0.1476      0.1476
+   URI           1    0.2143      0.2143
+   WAB           1    0.0805      0.0805
+  WYNN           1    0.1431      0.1431
+   ALL          28    0.1630     31.5508
+
+--- Win/Loss Statistics ---
+Total Trades: 28
+Wins: 20, Losses: 8, Win Rate: 71.43%
+Average Gain per Trade: 0.1399
+Total Return (with fees): 31.5508
+Final Capital Multiple: 32.5508x
+=====================================
+
+===== SUMMARY REPORT for 2015 =====
+Ticker  num_trades  avg_gain  total_gain
+  AMCR           1   -0.0020     -0.0020
+  ANET           1    0.1532      0.1532
+  AXON           1    0.2052      0.2052
+   CZR           1    0.1905      0.1905
+    EA           1    0.0890      0.0890
+    ED           1    0.0542      0.0542
+  EVRG           1    0.0658      0.0658
+   FCX           1    0.4572      0.4572
+  FTNT           1    0.1693      0.1693
+   GPN           1    0.0736      0.0736
+  HOLX           1    0.1135      0.1135
+   HUM           1    0.2747      0.2747
+  INCY           2    0.1700      0.3655
+  PAYC           2    0.1729      0.3678
+  POOL           1    0.1198      0.1198
+   TKO           1    0.2112      0.2112
+  VRTX           1    0.0735      0.0735
+    WM           1    0.0496      0.0496
+   WMB           1    0.2673      0.2673
+   ALL          21    0.1531     17.9752
+
+--- Win/Loss Statistics ---
+Total Trades: 21
+Wins: 20, Losses: 1, Win Rate: 95.24%
+Average Gain per Trade: 0.1548
+Total Return (with fees): 17.9752
+Final Capital Multiple: 18.9752x
+=====================================
+
+===== SUMMARY REPORT for 2014 =====
+Ticker  num_trades  avg_gain  total_gain
+  AKAM           1    0.2403      0.2403
+  AMCR           2    0.0009      0.0017
+  AXON           1    0.1635      0.1635
+ BRK-B           1    0.0321      0.0321
+   CRL           1    0.0358      0.0358
+  CTAS           1    0.0676      0.0676
+  DECK           1    0.0395      0.0395
+    EA           2    0.1462      0.3112
+    EW           1    0.0978      0.0978
+  INCY           1    0.1068      0.1068
+  ISRG           2    0.1651      0.3566
+  META           1    0.1383      0.1383
+    MU           1    0.2318      0.2318
+  ORCL           1    0.1329      0.1329
+  PODD           1    0.1474      0.1474
+  SCHW           1    0.0813      0.0813
+    SW           1   -0.0020     -0.0020
+   TMO           1    0.0154      0.0154
+  TSLA           1    0.1551      0.1551
+  TTWO           1    0.1406      0.1406
+  VRSK           1    0.0418      0.0418
+  VRTX           1    0.3907      0.3907
+  WYNN           1    0.1023      0.1023
+   ALL          26    0.1161     14.5775
+
+--- Win/Loss Statistics ---
+Total Trades: 26
+Wins: 24, Losses: 2, Win Rate: 92.31%
+Average Gain per Trade: 0.1147
+Total Return (with fees): 14.5775
+Final Capital Multiple: 15.5775x
 =====================================
