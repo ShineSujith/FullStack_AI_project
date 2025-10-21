@@ -4,11 +4,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-# --- Set the target year ---
-theYear = 2020
 
-
-def play(stocks_dir="stocks", plots_dir="plots", out_csv_template=f"{theYear}_perf.csv"):
+def play(stocks_dir, plots_dir, out_csv_template, year):
     """
     Simulation: Multi-stock Bollinger Band Strategy (non-overlapping optimal trade filter)
     - BUY when Adj Close <= lower Bollinger Band
@@ -20,7 +17,7 @@ def play(stocks_dir="stocks", plots_dir="plots", out_csv_template=f"{theYear}_pe
         * Win/loss statistics
         * Output appended to Output.txt
     """
-
+    theYear = year
     stocks_path = Path(stocks_dir)
     plots_path = Path(plots_dir)
     plots_path.mkdir(parents=True, exist_ok=True)

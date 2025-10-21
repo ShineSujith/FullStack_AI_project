@@ -9,3 +9,32 @@
 5. we changed it to this rsi_buy = (adj <= 0.90 * sma100) rsi_sell = (adj2 >= 1.10 * sma100) but still get No completed trades found for the specified year.
 
 6. i fixed the issue the stocks folder path was just inaccessible. Can you make it so the but line is green and sell is red
+
+7. The code given works by investing based on set parameters in a sort of stock simulation. It buys a single stock that meets the parameters and holds it until it sells, only one stock is traded at a time. I want you to edit the code so that bolinger bands act as only a buy signal and rsi as a sell. Check the moving average value at potential buys and buy on the stock with lowest moving average (i.e. cycle through the entire list and compare the moving averages between until the winner is selected) - GPT 5
+(Note: here we rapidly changed the our strategy using smaller prompts to fine tune it)
+
+8. edit the code to buy and sell stocks across companies even if we already have a stock in a different company. Then compare the buy and sell gains as well as making sure dates don't overlap to plot the most optimal gains. filter the output csvs for these values aswell. Only plot the optimal stock. (I inserted the code here) - GPT 5
+
+9. The code given works by investing based on set parameters in a sort of stock simulation.
+I want you to take the code given and alter it so that there is an all or nothing type of investing mindset.
+What I mean by this is that you have a flag variable to keep track of whether or not you have invested in a stock.
+If you have, you must wait until you sell a stock and set the flag to 0 (ie when you have bought say apple, the flag is 1 and when you sell apple a few days later it's set to 0).
+Right now the simulation buys stocks that meet the requirements, this means you buy stock a on day 1 and sell it on day 10 for example,
+but other stocks are bought in the mean time. You must alter it to not do this but invest in only one at a time.
+Please write the code so I can copy and paste it all into my file. Make sure graphs are still generated for the buy and sells using matplotlib,
+check the csv files naming etc if need be. Code: (I inserted the code here). GPT-5
+ 
+10. The code given works by investing based on set parameters in a sort of stock simulation. It buys a single stock that meets the parameters
+and holds it until it sells, only one stock is traded at a time. I want you to edit the code so that 
+Please write the code so I can copy and paste it all into my file. Make sure graphs are still generated for the buy and sells using matplotlib,
+check the csv files naming etc if need be. Code: (I inserted the code here).
+ 
+11. I want you to take this code and add a summary report to it, equity curve (cumulative return over time), 
+deduct small fees from every trade ie 0.1% and add win loss statistics for the trades, tell me which version 
+of gpt was used and give me the full edited code: (GPT-5)
+ 
+12. Can you take the summary report code and put it into a file named Output.txt that doesn't get overwritten but added to with each run, along with the trades wins, 
+gains and return? Tell me what version of gpt was used and output the code whole
+ 
+13. can you calcolate the total gain in the summary report to reflect the actual gain 
+as you currently add all of the gains instead of doing gain 1 being .2 gain 3 being .4 meaning 1.2*.4 ...
