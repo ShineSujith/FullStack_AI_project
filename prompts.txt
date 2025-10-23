@@ -1,40 +1,51 @@
-1. Show me how to set up a VSCode Python project called FullStackProject1 containing main.py which uses a virtual environment to call a function called play() in play_ground.py
-
-2. I have S@p500 stock data for 25 years in csv files in a directory called "stocks"; the files contain the following columns: Date, Close, Adj Close, High, Low, Open, Volume, Ticker. Process all stocks in the directory. Set a variable called theYear to 2024. For each trading day in theYear, check if: - the adjusted close is at least 30% below the 100-day moving average on that trading day (RSI). - when prices touch the lower band (bollinger bands), RSI takes priority. - If a stock meets these criteria, create a buy signal for that trading day. Create a sell signal when any one of these conditions is met on a later trading day: - the adjusted close is at least 70% above the 100-day moving average on that trading day (RSI). - when prices touch the lower band (bollinger bands), RSI takes priority. For each stock that meets the buy and sell criteria at least once, put the following into a dataframe: - stock ticker, - buy date, - buy price, - the adjusted close percentage below the 100-day moving average when the buy signal was created, - sell price, - sell date, - percentage gain, - number of trading days between buy and sell. Sort the df by buy date and save to a csv file called theYear_perf.csv. Then, for each of these stocks, plot the: - theYear adjusted close prices, - buy and sell signals, - 100-day moving average. Show buy and sell signals as vertical dashed lines. Put the images in a directory called plots. Put the code in a function called play(). Before creating the code, outline precisely what you intend to do
-
-3. give me a command to install the libraries that are not there by default
-
-4. we got this when running the code No completed trades found for the specified year.
-
-5. we changed it to this rsi_buy = (adj <= 0.90 * sma100) rsi_sell = (adj2 >= 1.10 * sma100) but still get No completed trades found for the specified year.
-
-6. i fixed the issue the stocks folder path was just inaccessible. Can you make it so the but line is green and sell is red
-
-7. The code given works by investing based on set parameters in a sort of stock simulation. It buys a single stock that meets the parameters and holds it until it sells, only one stock is traded at a time. I want you to edit the code so that bolinger bands act as only a buy signal and rsi as a sell. Check the moving average value at potential buys and buy on the stock with lowest moving average (i.e. cycle through the entire list and compare the moving averages between until the winner is selected) - GPT 5
-(Note: here we rapidly changed the our strategy using smaller prompts to fine tune it)
-
-8. edit the code to buy and sell stocks across companies even if we already have a stock in a different company. Then compare the buy and sell gains as well as making sure dates don't overlap to plot the most optimal gains. filter the output csvs for these values aswell. Only plot the optimal stock. (I inserted the code here) - GPT 5
-
-9. The code given works by investing based on set parameters in a sort of stock simulation.
-I want you to take the code given and alter it so that there is an all or nothing type of investing mindset.
-What I mean by this is that you have a flag variable to keep track of whether or not you have invested in a stock.
-If you have, you must wait until you sell a stock and set the flag to 0 (ie when you have bought say apple, the flag is 1 and when you sell apple a few days later it's set to 0).
-Right now the simulation buys stocks that meet the requirements, this means you buy stock a on day 1 and sell it on day 10 for example,
-but other stocks are bought in the mean time. You must alter it to not do this but invest in only one at a time.
-Please write the code so I can copy and paste it all into my file. Make sure graphs are still generated for the buy and sells using matplotlib,
-check the csv files naming etc if need be. Code: (I inserted the code here). GPT-5
+You are a master at python code and have vast knowledge when it comes to predicting the stock market. I have S@p500 stock data for 25 years in csv files in a directory called "stocks"; the files contain the following columns: Date, Close, Adj Close, High, Low, Open, Volume, Ticker. Process all stocks in the directory. There are two files main.py and play_ground.py. main.py calls the play function in play_ground.py. main.py should run the play function which takes in a start year and an end year, the play code will run for each year inclusive. For each trading day in theYear, check if: - the adjusted close is at least 1.5 standard deviations below the 50-day moving average on that trading day. - when prices touch the lower band (bollinger bands). - If a stock meets these criteria, create a buy signal for that trading day. Create a sell signal when this condition is met on a later trading day: - the adjusted close is at least 1.5 standard deviations above the 50-day moving average on that trading day. - when prices touch the upper band (bollinger bands). The code should have a flag variable to keep track of whether or not you have invested in a stock. If you have the flag should be set ie when the first stock is purchased, you must wait until you sell a stock and set the flag to 0 (ie when you have bought say apple, the flag is 1 and when you sell apple a few days later it's set to 0) You can only buy one stock at a time and only one company, there should be no overlapping trades. I want you to compare each stock for highest potential to earn money ie see which stock currently meets the thresholds "the best" ie the stock is way undervalued. Pick the best one to invest in at the time. For each stock that meets the buy and sell criteria at least once, put the following into a dataframe: - stock ticker, - buy date, - buy price, - the adjusted close percentage below the 50-day moving average when the buy signal was created, - sell price, - sell date, - percentage gain, - number of trading days between buy and sell. Sort the df by buy date and save to a csv file called theYear_perf.csv. Then, for each of these stocks, plot the: - theYear adjusted close prices, - buy and sell signals, - 50-day moving average, - Bollinger Bands, - An equity plot of the rising cumulative gain. Add the cumulative return for the year and the average percentage gain for all stocks that year. Show buy and sell signals as vertical dashed lines, red for buy and green for sell. Put the images in a directory called plots. I want you to take this code and add a summary report to it, deduct small fees from every trade ie 0.1% and add win loss statistics for the trades in the terminal. Put the average return per stock trade and the cumulative return over the year in the .csv as well. Maintain a single equity variable starting at 1.0 (100% capital).After each trade, update equity multiplicatively. Track cumulative equity after each trade for plotting. Calculate final cumulative return as equity - 1 (compounded). Calculate the price return percent and total return percent as shown below for each year and add this to results.txt without copying the numbers shown in the example. You can make estimates for dividends in the calculations. Price return is calculated via: ((Price at the end)-(Price at the start))/Price start*100. Total return is:  ((Price at the end)-(Price at the start+ Dividend))/Price start*100. Main will be passing several years into the function i.e. running the prediction several times, I want you to save the compound gain for each year to put in a file called Results.txt using the format below once the function is complete. Use UTF-8 encoding when writing the file Include the price return and total return telling me how dividends are calculated. Include average return per trade and number of winning/losing trades in the summary. Before creating the code, outline precisely what you intend to do.
  
-10. The code given works by investing based on set parameters in a sort of stock simulation. It buys a single stock that meets the parameters
-and holds it until it sells, only one stock is traded at a time. I want you to edit the code so that 
-Please write the code so I can copy and paste it all into my file. Make sure graphs are still generated for the buy and sells using matplotlib,
-check the csv files naming etc if need be. Code: (I inserted the code here).
+Example format:
+
+Year Price Return (%) Total Return (%)
+2000    -9.10%    -9.03%
+2001    -13.04%    -11.85%
+2002    -23.37%    -22.10%
+2003    26.38%    28.68%
+2004    8.99%    10.88%
+2005    3.00%    4.91%
+2006    13.62%    15.79%
+2007    3.53%    5.49%
+2008    -38.49%    -37.00%
+2009    23.45%    26.46%
+2010    12.78%    15.06%
+2011    0.00%    2.11%
+2012    13.41%    16.00%
+2013    29.60%    32.39%
+2014    11.39%    13.69%
+2015    -0.73%    1.38%
+2016    9.54%    11.96%
+2017    19.42%    21.83%
+2018    -6.24%    -4.38%
+2019    28.88%    31.49%
+2020    16.26%    18.40%
+2021    26.89%    28.71%
+2022    -18.11%    -18.11%
+2023    24.25%    26.29%
+2024    22.02%    25.02%
+2025    12.29% (YTD)    14.35% (YTD)
+
+Finished processing year 2025. Compounded gain: 9.60%
+Finished processing year 2024. Compounded gain: 23.09%
+Finished processing year 2023. Compounded gain: 36.11%
+Finished processing year 2022. Compounded gain: 101.44%
+Finished processing year 2021. Compounded gain: 22.06%
+Finished processing year 2020. Compounded gain: 19.92%
+Finished processing year 2019. Compounded gain: 93.72%
+Finished processing year 2018. Compounded gain: 11.00%
+Finished processing year 2017. Compounded gain: 34.39%
+Finished processing year 2016. Compounded gain: 23.80%
+Finished processing year 2015. Compounded gain: 3.37%
+Finished processing year 2014. Compounded gain: 31.16%
  
-11. I want you to take this code and add a summary report to it, equity curve (cumulative return over time), 
-deduct small fees from every trade ie 0.1% and add win loss statistics for the trades, tell me which version 
-of gpt was used and give me the full edited code: (GPT-5)
+Calculate compound gain over the number of years entered at the bottom of the results.txt file as well as writing the example above.
  
-12. Can you take the summary report code and put it into a file named Output.txt that doesn't get overwritten but added to with each run, along with the trades wins, 
-gains and return? Tell me what version of gpt was used and output the code whole
  
-13. can you calcolate the total gain in the summary report to reflect the actual gain 
-as you currently add all of the gains instead of doing gain 1 being .2 gain 3 being .4 meaning 1.2*.4 ...
+Print the version of GPT used to make the code type the full code below:
+
+GPT-5 Mini was used for the code.
