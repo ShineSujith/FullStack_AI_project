@@ -1,261 +1,250 @@
+# play_ground.py
 import os
-from pathlib import Path
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Print model version used
+print("GPT Version used: GPT-5 Thinking mini")
 
-def play(stocks_dir, plots_dir, out_csv_template, year):
+def play(theYear, stock_dir="stocks", plot_dir="plots", ma_window=50, std_multiplier=1.5, fee_pct=0.001, est_div_yield=0.02):
     """
-    Simulation: Multi-stock Bollinger Band Strategy (non-overlapping optimal trade filter)
-    - BUY when Adj Close <= lower Bollinger Band
-    - SELL when Adj Close >= upper Bollinger Band
-    - Includes:
-        * Summary report per ticker (compounded gain)
-        * Equity curve (cumulative return)
-        * 0.1% transaction fee per trade (both sides)
-        * Win/loss statistics
-        * Output appended to Output.txt
+    Run strategy for a single year.
+    Returns tuple: (strategy_compounded_pct, market_price_return_pct, market_total_return_pct_est)
     """
-    theYear = year
-    stocks_path = Path(stocks_dir)
-    plots_path = Path(plots_dir)
-    plots_path.mkdir(parents=True, exist_ok=True)
 
-    result_rows = []
+    os.makedirs(plot_dir, exist_ok=True)
 
-    # --- Load and prepare all stock data ---
-    all_data = []
-    for csv_file in sorted(stocks_path.glob("*.csv")):
+    # Load data and compute indicators for each stock for this year
+    files = [f for f in os.listdir(stock_dir) if f.endswith(".csv")]
+    stock_data = {}
+    for fname in files:
+        path = os.path.join(stock_dir, fname)
         try:
-            df = pd.read_csv(csv_file, parse_dates=["Date"])
-        except Exception as e:
-            print(f"Skipping {csv_file} - failed to read: {e}")
+            df_all = pd.read_csv(path, parse_dates=['Date'])
+        except Exception:
+            continue
+        if df_all.empty:
+            continue
+        df_all = df_all.sort_values('Date').copy()
+        dyear = df_all[df_all['Date'].dt.year == int(theYear)].copy()
+        if dyear.empty or len(dyear) < ma_window:
+            continue
+        dyear['MA50'] = dyear['Adj Close'].rolling(ma_window).mean()
+        dyear['STD50'] = dyear['Adj Close'].rolling(ma_window).std()
+        dyear['Upper'] = dyear['MA50'] + std_multiplier * dyear['STD50']
+        dyear['Lower'] = dyear['MA50'] - std_multiplier * dyear['STD50']
+        ticker = dyear['Ticker'].iloc[0] if 'Ticker' in dyear.columns else os.path.splitext(fname)[0]
+        stock_data[ticker] = dyear.reset_index(drop=True)
+
+    if not stock_data:
+        print(f"No valid stock data for year {theYear}.")
+        return 0.0, 0.0, 0.0
+
+    # Build market proxy (equally-weighted) across available tickers per date
+    all_dates = sorted({d for df in stock_data.values() for d in df['Date'].tolist()})
+    all_dates = pd.to_datetime(all_dates)
+    proxy_rows = []
+    for date in all_dates:
+        vals = []
+        for df in stock_data.values():
+            r = df[df['Date'] == date]
+            if not r.empty:
+                vals.append(r['Adj Close'].values[0])
+        if vals:
+            proxy_rows.append((date, float(np.mean(vals))))
+    proxy_df = pd.DataFrame(proxy_rows, columns=['Date', 'ProxyPrice']).sort_values('Date').reset_index(drop=True)
+
+    if proxy_df.empty:
+        market_price_return_pct = 0.0
+        market_total_return_pct = 0.0
+    else:
+        P_start = proxy_df['ProxyPrice'].iloc[0]
+        P_end = proxy_df['ProxyPrice'].iloc[-1]
+        market_price_return_pct = (P_end - P_start) / P_start * 100.0
+        dividend_amount = P_start * est_div_yield
+        # total return interpreted as (P_end - P_start + Dividend) / P_start *100
+        market_total_return_pct = ((P_end - P_start) + dividend_amount) / P_start * 100.0
+
+    # Strategy variables
+    dates = list(proxy_df['Date'])
+    trades = []
+    equity = 1.0
+    equity_history = []  # after each sell: dict {Date, Equity}
+    flag = 0
+    buy_ticker = None
+    buy_price = 0.0
+    buy_date = None
+    pct_below_ma_at_buy = 0.0
+
+    def get_row(df, date):
+        r = df[df['Date'] == date]
+        return r.iloc[0] if not r.empty else None
+
+    for current_date in dates:
+        # SELL check
+        if flag == 1 and buy_ticker is not None:
+            df_hold = stock_data.get(buy_ticker)
+            if df_hold is not None:
+                row = get_row(df_hold, current_date)
+                if row is not None:
+                    ma = row['MA50']
+                    upper = row['Upper']
+                    std50 = row['STD50']
+                    adj = row['Adj Close']
+                    if pd.notna(ma) and pd.notna(upper) and pd.notna(std50) and buy_price > 0:
+                        if (adj >= upper) and (adj >= ma + std_multiplier * std50):
+                            sell_price = adj * (1.0 - fee_pct)
+                            sell_date = current_date
+                            pct_gain = (sell_price / buy_price - 1.0) * 100.0
+                            holding_days = (sell_date - buy_date).days
+
+                            equity *= (1.0 + pct_gain / 100.0)
+                            equity_history.append({'Date': sell_date, 'Equity': equity})
+
+                            trades.append({
+                                'Ticker': buy_ticker,
+                                'Buy Date': buy_date,
+                                'Buy Price': round(buy_price, 6),
+                                '% Below MA50': round(pct_below_ma_at_buy, 6),
+                                'Sell Date': sell_date,
+                                'Sell Price': round(sell_price, 6),
+                                '% Gain': round(pct_gain, 6),
+                                'Holding Days': holding_days,
+                                'Cumulative Equity %': round((equity - 1.0) * 100.0, 6)
+                            })
+
+                            # reset
+                            flag = 0
+                            buy_ticker = None
+                            buy_price = 0.0
+                            buy_date = None
+                            pct_below_ma_at_buy = 0.0
             continue
 
-        if "Adj Close" not in df.columns:
-            for c in df.columns:
-                if c.lower().replace("_", " ") == "adj close":
-                    df = df.rename(columns={c: "Adj Close"})
-                    break
-        if "Adj Close" not in df.columns:
-            print(f"Skipping {csv_file} - no 'Adj Close' column found")
-            continue
+        # BUY candidates
+        if flag == 0:
+            candidates = []
+            for ticker, df in stock_data.items():
+                row = get_row(df, current_date)
+                if row is None:
+                    continue
+                ma = row['MA50']
+                lower = row['Lower']
+                std50 = row['STD50']
+                adj = row['Adj Close']
+                if pd.isna(ma) or pd.isna(lower) or pd.isna(std50):
+                    continue
+                if (adj <= lower) and (adj <= ma - std_multiplier * std50):
+                    pct_below = ((ma - adj) / ma) * 100.0
+                    candidates.append((ticker, adj, pct_below))
+            if candidates:
+                best = max(candidates, key=lambda x: x[2])
+                buy_ticker = best[0]
+                raw_price = best[1]
+                buy_price = raw_price * (1.0 + fee_pct)
+                buy_date = current_date
+                pct_below_ma_at_buy = best[2]
+                flag = 1
+                # don't record trade until sell
 
-        ticker = df["Ticker"].iloc[0] if "Ticker" in df.columns else csv_file.stem.upper()
+    # Force-close at last available date for held ticker if still holding
+    if flag == 1 and buy_ticker is not None:
+        df_hold = stock_data.get(buy_ticker)
+        if df_hold is not None and len(df_hold) > 0:
+            last_date = df_hold['Date'].max()
+            row = get_row(df_hold, last_date)
+            if row is not None and pd.notna(row['Adj Close']):
+                adj = row['Adj Close']
+                sell_price = adj * (1.0 - fee_pct)
+                sell_date = last_date
+                pct_gain = (sell_price / buy_price - 1.0) * 100.0
+                holding_days = (sell_date - buy_date).days
 
-        # Compute Bollinger Bands
-        df = df.sort_values("Date").reset_index(drop=True)
-        df["MA20"] = df["Adj Close"].rolling(window=20, min_periods=20).mean()
-        df["STD20"] = df["Adj Close"].rolling(window=20, min_periods=20).std()
-        df["BB_upper"] = df["MA20"] + 1.5 * df["STD20"]
-        df["BB_lower"] = df["MA20"] - 1.5 * df["STD20"]
-        df["z_score"] = (df["Adj Close"] - df["MA20"]) / df["STD20"]
-        df["Ticker"] = ticker
+                equity *= (1.0 + pct_gain / 100.0)
+                equity_history.append({'Date': sell_date, 'Equity': equity})
 
-        # Keep only target year
-        df_year = df[df["Date"].dt.year == theYear].copy()
-        if not df_year.empty:
-            all_data.append(df_year)
-
-    if not all_data:
-        print("No stock data found for the target year.")
-        return
-
-    # Combine all tickers’ data
-    combined = pd.concat(all_data, ignore_index=True)
-    combined = combined.sort_values("Date").reset_index(drop=True)
-
-    # --- Simulate for each ticker independently ---
-    tickers = combined["Ticker"].unique()
-    fee = 0.001  # 0.1% transaction cost per side
-
-    for ticker in tickers:
-        df = combined[combined["Ticker"] == ticker].copy().reset_index(drop=True)
-        invested = False
-        buy_price = None
-        buy_date = None
-
-        for _, row in df.iterrows():
-            # BUY
-            if not invested and row["Adj Close"] <= row["BB_lower"] and not pd.isna(row["BB_lower"]):
-                invested = True
-                buy_date = row["Date"]
-                buy_price = row["Adj Close"]
-                buy_cause = f"BB_lower_cross (z={row['z_score']:.2f})"
-
-            # SELL
-            elif invested and row["Adj Close"] >= row["BB_upper"]:
-                sell_date = row["Date"]
-                sell_price = row["Adj Close"]
-                sell_cause = "BB_upper_cross"
-
-                # Apply transaction fees
-                net_buy_price = buy_price * (1 + fee)
-                net_sell_price = sell_price * (1 - fee)
-                pct_gain = (net_sell_price / net_buy_price) - 1.0
-                days_held = (sell_date - buy_date).days
-
-                result_rows.append({
-                    "Ticker": ticker,
-                    "buy_date": buy_date.date().isoformat(),
-                    "buy_price": float(buy_price),
-                    "sell_date": sell_date.date().isoformat(),
-                    "sell_price": float(sell_price),
-                    "pct_gain": float(pct_gain),
-                    "days_held": int(days_held),
-                    "buy_cause": buy_cause,
-                    "sell_cause": sell_cause,
+                trades.append({
+                    'Ticker': buy_ticker,
+                    'Buy Date': buy_date,
+                    'Buy Price': round(buy_price, 6),
+                    '% Below MA50': round(pct_below_ma_at_buy, 6),
+                    'Sell Date': sell_date,
+                    'Sell Price': round(sell_price, 6),
+                    '% Gain': round(pct_gain, 6),
+                    'Holding Days': holding_days,
+                    'Cumulative Equity %': round((equity - 1.0) * 100.0, 6)
                 })
+        # reset
+        flag = 0
+        buy_ticker = None
+        buy_price = 0.0
+        buy_date = None
+        pct_below_ma_at_buy = 0.0
 
-                invested = False
-                buy_date = None
-                buy_price = None
+    # Save trades CSV and produce plots
+    if trades:
+        trades_df = pd.DataFrame(trades).sort_values('Buy Date').reset_index(drop=True)
+        avg_return = float(trades_df['% Gain'].mean())
+        wins = int((trades_df['% Gain'] > 0).sum())
+        losses = int((trades_df['% Gain'] <= 0).sum())
+        year_total_pct = (equity - 1.0) * 100.0
 
-    if not result_rows:
-        print("No completed trades found for the specified year.")
-        return
+        trades_df['Avg Return % (all trades)'] = round(avg_return, 6)
+        trades_df['Year Total Cumulative Return %'] = round(year_total_pct, 6)
 
-    # --- Save all trades ---
-    trades_df = pd.DataFrame(result_rows)
-    trades_df["buy_date_dt"] = pd.to_datetime(trades_df["buy_date"])
-    trades_df["sell_date_dt"] = pd.to_datetime(trades_df["sell_date"])
-    trades_df = trades_df.sort_values(by=["buy_date_dt"])
+        csv_name = f"{theYear}_perf.csv"
+        trades_df.to_csv(csv_name, index=False)
 
-    out_csv_all = Path(f"{theYear}_all_trades.csv")
-    trades_df.to_csv(out_csv_all, index=False)
-    print(f"Saved all trades -> {out_csv_all.resolve()}")
+        # Equity curve plot (points at sell events)
+        if len(equity_history) > 0:
+            eqdf = pd.DataFrame(equity_history).sort_values('Date')
+            eqdf['Cumulative Return %'] = (eqdf['Equity'] - 1.0) * 100.0
+            plt.figure(figsize=(10,5))
+            plt.plot(eqdf['Date'], eqdf['Cumulative Return %'], marker='o')
+            plt.title(f"Equity Curve (compounded) - {theYear}")
+            plt.xlabel("Date")
+            plt.ylabel("Cumulative Return (%)")
+            plt.tight_layout()
+            plt.savefig(os.path.join(plot_dir, f"equity_curve_{theYear}.png"))
+            plt.close()
 
-    # --- Remove overlapping trades (keep best profits only) ---
-    trades_df = trades_df.sort_values(by=["pct_gain"], ascending=False)
-    selected_trades = []
+        # Per-stock plots (only for tickers that had trades)
+        for ticker in trades_df['Ticker'].unique():
+            if ticker not in stock_data:
+                continue
+            df_plot = stock_data[ticker]
+            t_trades = trades_df[trades_df['Ticker'] == ticker]
+            plt.figure(figsize=(12,6))
+            plt.plot(df_plot['Date'], df_plot['Adj Close'], label='Adj Close')
+            plt.plot(df_plot['Date'], df_plot['MA50'], linestyle='--', label='MA50')
+            plt.plot(df_plot['Date'], df_plot['Upper'], linestyle=':', label='Upper')
+            plt.plot(df_plot['Date'], df_plot['Lower'], linestyle=':', label='Lower')
+            for _, r in t_trades.iterrows():
+                plt.axvline(r['Buy Date'], color='red', linestyle='--', alpha=0.7)
+                plt.axvline(r['Sell Date'], color='green', linestyle='--', alpha=0.7)
+                try:
+                    plt.scatter([r['Buy Date']], [r['Buy Price']], color='red', marker='^', zorder=5)
+                    plt.scatter([r['Sell Date']], [r['Sell Price']], color='green', marker='v', zorder=5)
+                except Exception:
+                    pass
+            plt.title(f"{ticker} - {theYear}")
+            plt.legend()
+            plt.tight_layout()
+            plt.savefig(os.path.join(plot_dir, f"{ticker}_{theYear}.png"))
+            plt.close()
 
-    for _, trade in trades_df.iterrows():
-        trade_start = trade["buy_date_dt"]
-        trade_end = trade["sell_date_dt"]
+        # Print summary
+        print(f"Year {theYear} summary:")
+        print(f"Number of trades: {len(trades_df)}")
+        print(f"Winning trades: {wins}")
+        print(f"Losing trades: {losses}")
+        print(f"Average return per trade: {round(avg_return,4)}%")
+        print(f"Year total compounded return: {round(year_total_pct,4)}%")
 
-        overlaps = False
-        for chosen in selected_trades:
-            chosen_start = chosen["buy_date_dt"]
-            chosen_end = chosen["sell_date_dt"]
-            if not (trade_end < chosen_start or trade_start > chosen_end):
-                overlaps = True
-                break
-
-        if not overlaps:
-            selected_trades.append(trade)
-
-    optimal_df = pd.DataFrame(selected_trades).sort_values("buy_date_dt")
-
-    out_csv_opt = Path(f"{theYear}_optimal_trades.csv")
-    optimal_df.to_csv(out_csv_opt, index=False)
-    print(f"Saved optimal (non-overlapping) trades -> {out_csv_opt.resolve()}")
-
-    # --- Win/Loss Statistics ---
-    wins = (optimal_df["pct_gain"] > 0).sum()
-    losses = (optimal_df["pct_gain"] <= 0).sum()
-    total = wins + losses
-    win_rate = (wins / total) * 100 if total > 0 else 0
-    avg_gain = optimal_df["pct_gain"].mean()
-    total_return = (1 + optimal_df["pct_gain"]).prod() - 1  # compounded
-
-    # --- Summary Report (compounded total gain) ---
-    summary_list = []
-    for ticker, grp in optimal_df.groupby("Ticker"):
-        num_trades = len(grp)
-        avg_gain_ticker = grp["pct_gain"].mean()
-        total_gain_ticker = (1 + grp["pct_gain"]).prod() - 1
-        summary_list.append({
-            "Ticker": ticker,
-            "num_trades": num_trades,
-            "avg_gain": avg_gain_ticker,
-            "total_gain": total_gain_ticker
-        })
-
-    summary = pd.DataFrame(summary_list)
-    total_row = {
-        "Ticker": "ALL",
-        "num_trades": summary["num_trades"].sum(),
-        "avg_gain": summary["avg_gain"].mean(),
-        "total_gain": total_return
-    }
-    summary = pd.concat([summary, pd.DataFrame([total_row])], ignore_index=True)
-
-    summary.to_csv(f"{theYear}_summary.csv", index=False)
-    print("\n--- SUMMARY REPORT ---")
-    print(summary)
-
-    # --- Append results to Output.txt (not overwrite) ---
-    output_file = Path("Output.txt")
-    with open(output_file, "a", encoding="utf-8") as f:
-        f.write(f"\n===== SUMMARY REPORT for {theYear} =====\n")
-        f.write(summary.to_string(index=False, float_format=lambda x: f"{x:.4f}"))
-        f.write("\n\n--- Win/Loss Statistics ---\n")
-        f.write(f"Total Trades: {total}\n")
-        f.write(f"Wins: {wins}, Losses: {losses}, Win Rate: {win_rate:.2f}%\n")
-        f.write(f"Average Gain per Trade: {avg_gain:.4f}\n")
-        f.write(f"Total Return (with fees): {total_return:.4f}\n")
-        f.write(f"Final Capital Multiple: {1 + total_return:.4f}x\n")
-        f.write("=====================================\n")
-
-    # --- Equity Curve (Cumulative Return) ---
-    optimal_df = optimal_df.sort_values("sell_date_dt").copy()
-    optimal_df["cum_return"] = (1 + optimal_df["pct_gain"]).cumprod() - 1
-
-    plt.figure(figsize=(10, 5))
-    plt.plot(optimal_df["sell_date_dt"], optimal_df["cum_return"], marker="o")
-    plt.title(f"Cumulative Return - {theYear}")
-    plt.xlabel("Date")
-    plt.ylabel("Cumulative Return")
-    plt.grid(True)
-    plt.tight_layout()
-    eq_fn = plots_path / f"{theYear}_equity_curve.png"
-    plt.savefig(eq_fn)
-    plt.close()
-    print(f"Equity curve saved -> {eq_fn}")
-
-    # --- Plot optimal trades per ticker ---
-    for ticker in optimal_df["Ticker"].unique():
-        csv_candidates = list(stocks_path.glob(f"*{ticker}*.csv"))
-        if not csv_candidates:
-            print(f"Could not find CSV for {ticker}, skipping plot.")
-            continue
-
-        df = pd.read_csv(csv_candidates[0], parse_dates=["Date"])
-        df["MA20"] = df["Adj Close"].rolling(window=20, min_periods=20).mean()
-        df["STD20"] = df["Adj Close"].rolling(window=20, min_periods=20).std()
-        df["BB_upper"] = df["MA20"] + 1.5 * df["STD20"]
-        df["BB_lower"] = df["MA20"] - 1.5 * df["STD20"]
-
-        plot_df = df[df["Date"].dt.year == theYear].copy()
-        if plot_df.empty:
-            continue
-
-        plt.figure(figsize=(12, 6))
-        plt.plot(plot_df["Date"], plot_df["Adj Close"], label="Adj Close")
-        plt.plot(plot_df["Date"], plot_df["MA20"], label="MA20")
-        plt.plot(plot_df["Date"], plot_df["BB_upper"], linestyle="--", label="BB_upper")
-        plt.plot(plot_df["Date"], plot_df["BB_lower"], linestyle="--", label="BB_lower")
-
-        trades = optimal_df[optimal_df["Ticker"] == ticker]
-        for _, tr in trades.iterrows():
-            bd = pd.to_datetime(tr["buy_date"])
-            sd = pd.to_datetime(tr["sell_date"])
-            plt.axvline(bd, linestyle="--", linewidth=1.2, color="green")
-            plt.text(bd, plot_df["Adj Close"].max(), "BUY", rotation=90, va="bottom")
-            plt.axvline(sd, linestyle="--", linewidth=1.2, color="red")
-            plt.text(sd, plot_df["Adj Close"].max(), "SELL", rotation=90, va="bottom")
-
-        plt.title(f"{ticker} - {theYear} Optimal Bollinger Band Trades")
-        plt.xlabel("Date")
-        plt.ylabel("Price")
-        plt.legend()
-        plt.tight_layout()
-        fn = plots_path / f"{ticker}_{theYear}_OPTIMAL.png"
-        plt.savefig(fn)
-        plt.close()
-        print(f"Optimal plot saved for {ticker} -> {fn}")
-
-
-if __name__ == "__main__":
-    play()
+        return round(year_total_pct, 6), round(market_price_return_pct, 6), round(market_total_return_pct, 6)
+    else:
+        # No trades executed
+        print(f"No trades executed for {theYear}.")
+        # still return market figures
+        return 0.0, round(market_price_return_pct, 6), round(market_total_return_pct, 6)
